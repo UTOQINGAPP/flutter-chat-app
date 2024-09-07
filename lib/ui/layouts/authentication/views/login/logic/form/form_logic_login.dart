@@ -70,7 +70,6 @@ class FormLogicLogin extends _$FormLogicLogin {
     if (kDebugMode) {
       print(state);
     }
-    //TODO: provider de login
 
     return (true, 'ok');
   }

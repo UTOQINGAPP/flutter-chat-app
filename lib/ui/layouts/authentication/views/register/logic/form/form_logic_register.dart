@@ -102,7 +102,7 @@ class FormLogicRegister extends _$FormLogicRegister {
     if (!state.isValid) {
       return (false, 'Formulario no válido');
     }
-    print(state);
+
     return (true, 'ok');
   }
 

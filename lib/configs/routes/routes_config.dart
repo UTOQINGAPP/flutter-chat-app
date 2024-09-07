@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 GoRouter routerConfig() =>
-    GoRouter(initialLocation: LoginViewAuthentication.link, routes: _routes);
+    GoRouter(initialLocation: UsersViewHome.link, routes: _routes);
 
 final List<RouteBase> _routes = [
   _authRoutes,
-  //_homeRoutes,
+  ..._homeRoutes,
 ];
 
 final RouteBase _authRoutes = StatefulShellRoute.indexedStack(
@@ -30,3 +30,22 @@ final RouteBase _authRoutes = StatefulShellRoute.indexedStack(
     ]),
   ],
 );
+final List<RouteBase> _homeRoutes = [
+  StatefulShellRoute.indexedStack(
+    pageBuilder: (context, state, navigationShell) {
+      return MaterialPage(child: HomeLayout(navigationShell: navigationShell));
+    },
+    branches: [
+      StatefulShellBranch(routes: [
+        GoRoute(
+          path: UsersViewHome.link,
+          builder: (context, state) => const UsersViewHome(),
+        ),
+      ]),
+    ],
+  ),
+  GoRoute(
+    path: ChatPageHome.link,
+    builder: (context, state) => const ChatPageHome(),
+  ),
+];

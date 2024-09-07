@@ -11,11 +11,11 @@ class ElevatedButtonComponentAuthentication extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        elevation: WidgetStatePropertyAll<double>(2),
+        elevation: const WidgetStatePropertyAll<double>(2),
         backgroundColor: onPressed != null
-            ? WidgetStatePropertyAll<Color>(Colors.blue)
-            : WidgetStatePropertyAll<Color>(Colors.grey),
-        shape: WidgetStatePropertyAll<OutlinedBorder>(StadiumBorder()),
+            ? const WidgetStatePropertyAll<Color>(Colors.blue)
+            : const WidgetStatePropertyAll<Color>(Colors.grey),
+        shape: const WidgetStatePropertyAll<OutlinedBorder>(StadiumBorder()),
       ),
       child: SizedBox(
           width: double.infinity,
