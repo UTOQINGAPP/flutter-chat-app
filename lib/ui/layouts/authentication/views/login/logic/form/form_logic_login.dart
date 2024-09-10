@@ -1,8 +1,7 @@
 import 'package:chat/configs/configs.dart';
-import 'package:flutter/foundation.dart';
-import 'package:formz/formz.dart';
+import 'package:chat/core/core.dart';
+import 'package:chat/ui/shared/shared_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
 part 'form_logic_login.g.dart';
 
 class FormLogicStateLogin {
@@ -66,12 +65,32 @@ class FormLogicLogin extends _$FormLogicLogin {
 
   Future<(bool, String)> onFormSubmit() async {
     _touchEveryField();
-    if (!state.isValid) {}
-    if (kDebugMode) {
-      print(state);
-    }
 
-    return (true, 'ok');
+    if (!state.isValid) {
+      return (false, 'Invalid data');
+    }
+    try {
+      state = state.copyWith(isPosting: true, isFormPosted: true);
+      final authenticationConsumerLogic =
+          ref.read(authenticationConsumerLogicSharedProvider);
+      final response = await authenticationConsumerLogic.login(
+        state.email.value,
+        state.password.value,
+      );
+      ref
+          .read(userLogicSharedProvider.notifier)
+          .update(UserAdapterUse.toEntity(response.user));
+      state = state.copyWith(isPosting: false, isFormPosted: false);
+
+      if (response.ok) {
+        return (response.ok, 'Login exitoso');
+      }
+    } catch (e) {
+      state = state.copyWith(isPosting: false, isFormPosted: false);
+
+      return (false, e.toString());
+    }
+    return (false, 'Unknown error');
   }
 
   void _touchEveryField() {

@@ -1,9 +1,9 @@
+import 'package:chat/configs/configs.dart';
 import 'package:chat/ui/layouts/authentication/components/components_authentication.dart';
 import 'package:chat/ui/layouts/authentication/views/login/logic/logic_login.dart';
 import 'package:chat/ui/layouts/authentication/views/register/register_view_authentication.dart';
+import 'package:chat/ui/layouts/home/home_layout.dart';
 import 'package:chat/ui/shared/shared_ui.dart';
-import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LoginViewAuthentication extends ConsumerWidget {
   static String link = '/authentication/login';
@@ -24,6 +24,7 @@ class LoginViewAuthentication extends ConsumerWidget {
             onChanged: (value) =>
                 ref.read(formLogicLoginProvider.notifier).onEmailChange(value),
             errorText: formLogicStateLogin.email.errorMessage,
+            enabled: !formLogicStateLogin.isFormPosted,
           ),
           CustomInputComponentShared(
             icon: Icons.key,
@@ -34,13 +35,31 @@ class LoginViewAuthentication extends ConsumerWidget {
                 .read(formLogicLoginProvider.notifier)
                 .onPasswordChange(value),
             errorText: formLogicStateLogin.password.errorMessage,
+            enabled: !formLogicStateLogin.isFormPosted,
           ),
           ElevatedButtonComponentAuthentication(
             label: 'Iniciar Sesión',
-            onPressed: () {
-              ref.read(formLogicLoginProvider.notifier).onFormSubmit();
-              formLogicStateLogin.toString();
-            },
+            onPressed: formLogicStateLogin.isPosting
+                ? null
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    (bool, String) result = await ref
+                        .read(formLogicLoginProvider.notifier)
+                        .onFormSubmit();
+
+                    if (result.$1) {
+                      if (context.mounted) {
+                        context.go(UsersViewHome.link);
+                      }
+                    } else {
+                      if (context.mounted) {
+                        showAlertDialogShared(context,
+                            title: 'Error al realizar el login',
+                            subTitle: result.$2);
+                      }
+                    }
+                    //formLogicStateLogin.toString();
+                  },
           ),
           const SizedBox(height: 60),
           LabelsComponentAuthentication(

@@ -7,6 +7,7 @@ class CustomInputComponentShared extends StatelessWidget {
   final bool isPassword;
   final void Function(String value)? onChanged;
   final String? errorText;
+  final bool enabled;
   const CustomInputComponentShared({
     super.key,
     required this.icon,
@@ -15,6 +16,7 @@ class CustomInputComponentShared extends StatelessWidget {
     this.isPassword = false,
     this.onChanged,
     this.errorText,
+    this.enabled = true,
   });
 
   @override
@@ -44,6 +46,7 @@ class CustomInputComponentShared extends StatelessWidget {
               keyboardType: keyboardType,
               obscureText: isPassword,
               onChanged: onChanged,
+              enabled: enabled,
               decoration: InputDecoration(
                 prefixIcon: Icon(icon),
                 focusedBorder: InputBorder.none,

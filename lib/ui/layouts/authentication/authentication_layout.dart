@@ -1,6 +1,4 @@
 import 'package:chat/configs/configs.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 export 'views/views_authentication.dart';
 
 class AuthenticationLayout extends StatelessWidget {

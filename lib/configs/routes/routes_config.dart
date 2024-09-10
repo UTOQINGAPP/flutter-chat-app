@@ -1,13 +1,20 @@
+import 'package:chat/configs/configs.dart';
 import 'package:chat/ui/ui.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-GoRouter routerConfig() =>
-    GoRouter(initialLocation: UsersViewHome.link, routes: _routes);
+GoRouter routerConfig(WidgetRef ref) => GoRouter(
+      initialLocation: LoadingPageShared.link,
+      routes: _routes,
+    );
 
 final List<RouteBase> _routes = [
   _authRoutes,
   ..._homeRoutes,
+  GoRoute(
+    path: LoadingPageShared.link,
+    builder: (context, state) => LoadingPageShared(
+      state: state,
+    ),
+  ),
 ];
 
 final RouteBase _authRoutes = StatefulShellRoute.indexedStack(

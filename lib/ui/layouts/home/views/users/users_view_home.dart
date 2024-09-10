@@ -1,16 +1,16 @@
+import 'package:chat/configs/configs.dart';
 import 'package:chat/ui/layouts/home/views/users/components/components_users.dart';
 import 'package:chat/ui/shared/shared_ui.dart';
-import 'package:flutter/material.dart';
 
-class UsersViewHome extends StatefulWidget {
+class UsersViewHome extends StatefulHookConsumerWidget {
   static String link = '/home/users';
   const UsersViewHome({super.key});
 
   @override
-  State<UsersViewHome> createState() => _UsersViewHomeState();
+  ConsumerState<UsersViewHome> createState() => _UsersViewHomeState();
 }
 
-class _UsersViewHomeState extends State<UsersViewHome> {
+class _UsersViewHomeState extends ConsumerState<UsersViewHome> {
   List<UserModelShared> usuarios = List.generate(5, (index) {
     return UserModelShared(
       online: index % 2 == 0,

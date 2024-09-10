@@ -1,9 +1,9 @@
+import 'package:chat/configs/configs.dart';
 import 'package:chat/ui/layouts/authentication/components/components_authentication.dart';
 import 'package:chat/ui/layouts/authentication/views/login/login_view_authentication.dart';
 import 'package:chat/ui/layouts/authentication/views/register/logic/logic_register.dart';
+import 'package:chat/ui/layouts/home/home_layout.dart';
 import 'package:chat/ui/shared/shared_ui.dart';
-import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class RegisterViewAuthentication extends ConsumerWidget {
   static String link = '/authentication/register';
@@ -48,10 +48,28 @@ class RegisterViewAuthentication extends ConsumerWidget {
           ),
           ElevatedButtonComponentAuthentication(
             label: 'Registrarse',
-            onPressed: () {
-              ref.read(formLogicRegisterProvider.notifier).onFormSubmit();
-              formLogicStateRegister.toString();
-            },
+            onPressed: formLogicStateRegister.isPosting
+                ? null
+                : () async {
+                    FocusScope.of(context).unfocus();
+
+                    (bool, String) result = await ref
+                        .read(formLogicRegisterProvider.notifier)
+                        .onFormSubmit();
+
+                    if (result.$1) {
+                      if (context.mounted) {
+                        context.go(UsersViewHome.link);
+                      }
+                    } else {
+                      if (context.mounted) {
+                        showAlertDialogShared(context,
+                            title: 'Error al realizar el Registro',
+                            subTitle: result.$2);
+                      }
+                    }
+                    //formLogicStateLogin.toString();
+                  },
           ),
           const SizedBox(height: 60),
           LabelsComponentAuthentication(

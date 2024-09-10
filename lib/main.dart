@@ -1,18 +1,4 @@
-import 'package:chat/configs/configs.dart';
-import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:chat/ui/ui.dart';
+import 'configs/configs.dart';
 
-void main() => runApp(const ProviderScope(child: MyApp()));
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'Material App',
-      routerConfig: routerConfig(),
-    );
-  }
-}
+void main() => runApp(const ProviderScope(child: App()));
