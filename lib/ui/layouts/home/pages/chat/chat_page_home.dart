@@ -1,9 +1,9 @@
 import 'dart:io';
-
 import 'package:chat/configs/configs.dart';
 import 'package:chat/core/core.dart';
-import 'package:chat/ui/layouts/home/pages/chat/components/components_chat.dart';
+import 'package:chat/ui/layouts/home/components/components_home.dart';
 import 'package:chat/ui/shared/shared_ui.dart';
+import 'package:flutter/foundation.dart';
 
 class ChatPageHome extends StatefulHookConsumerWidget {
   static String link = '/home/chat';
@@ -15,7 +15,7 @@ class ChatPageHome extends StatefulHookConsumerWidget {
 
 class _ChatPageHomeState extends ConsumerState<ChatPageHome>
     with TickerProviderStateMixin {
-  late List<MessageComponentChat> messages;
+  late List<MessageComponentChatHome> messages;
   @override
   Widget build(BuildContext context) {
     FocusNode focusNode = useFocusNode();
@@ -26,11 +26,7 @@ class _ChatPageHomeState extends ConsumerState<ChatPageHome>
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        leading: Platform.isIOS
-            ? null
-            : IconButton(
-                onPressed: () => context.pop(),
-                icon: const Icon(Icons.arrow_back)),
+        leading: _leadingAppBarButtonView(context),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 1,
@@ -66,6 +62,15 @@ class _ChatPageHomeState extends ConsumerState<ChatPageHome>
     );
   }
 
+  Widget? _leadingAppBarButtonView(BuildContext context) {
+    final Widget buttonGeneral = IconButton(
+        onPressed: () => context.pop(), icon: const Icon(Icons.arrow_back));
+    if (kIsWeb) {
+      return buttonGeneral;
+    }
+    return Platform.isIOS ? null : buttonGeneral;
+  }
+
   @override
   void initState() {
     messages = [];
@@ -73,7 +78,7 @@ class _ChatPageHomeState extends ConsumerState<ChatPageHome>
     ref
         .read(socketConsumerLogicSharedProvider.notifier)
         .socket
-        .on('personal-message', (payload) => listenToMessage(payload));
+        .on('personal-message', (payload) => _listenToMessage(payload));
 
     super.initState();
   }
@@ -89,7 +94,7 @@ class _ChatPageHomeState extends ConsumerState<ChatPageHome>
 
     final history = ref
         .read(chatConsumerLogicSharedProvider)
-        .map((message) => MessageComponentChat(
+        .map((message) => MessageComponentChatHome(
               animationController: AnimationController(
                 vsync: this,
                 duration: const Duration(milliseconds: 200),
@@ -106,7 +111,7 @@ class _ChatPageHomeState extends ConsumerState<ChatPageHome>
     });
   }
 
-  void listenToMessage(dynamic payload) async {
+  void _listenToMessage(dynamic payload) async {
     if (!mounted) {
       return;
     }
@@ -114,7 +119,7 @@ class _ChatPageHomeState extends ConsumerState<ChatPageHome>
     final user = ref.read(userLogicSharedProvider);
     final uid = user.uid;
 
-    final MessageComponentChat messageCreate = MessageComponentChat(
+    final MessageComponentChatHome messageCreate = MessageComponentChatHome(
       uid: uid,
       animationController: AnimationController(
         duration: const Duration(milliseconds: 200),
@@ -163,41 +168,51 @@ class _ChatPageHomeState extends ConsumerState<ChatPageHome>
                 focusNode: focusNode,
               ),
             ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Platform.isIOS
-                  ? CupertinoButton(
-                      onPressed: isWriting.value
-                          ? () => _handleSubmitLogic(
-                                messageController: messageController,
-                                focusNode: focusNode,
-                                isWriting: isWriting,
-                              )
-                          : null,
-                      child: const Text('Enviar'),
-                    )
-                  : Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: IconTheme(
-                        data: IconThemeData(color: Colors.blue[400]),
-                        child: IconButton(
-                          highlightColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          onPressed: isWriting.value
-                              ? () => _handleSubmitLogic(
-                                    messageController: messageController,
-                                    focusNode: focusNode,
-                                    isWriting: isWriting,
-                                  )
-                              : null,
-                          icon: const Icon(Icons.send),
-                        ),
-                      ),
-                    ),
-            ),
+            _buttonInputMessagePartView(
+                isWriting, messageController, focusNode),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buttonInputMessagePartView(ValueNotifier<bool> isWriting,
+      TextEditingController messageController, FocusNode focusNode) {
+    final Widget buttonGeneral = Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: IconTheme(
+        data: IconThemeData(color: Colors.blue[400]),
+        child: IconButton(
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          onPressed: isWriting.value
+              ? () => _handleSubmitLogic(
+                    messageController: messageController,
+                    focusNode: focusNode,
+                    isWriting: isWriting,
+                  )
+              : null,
+          icon: const Icon(Icons.send),
+        ),
+      ),
+    );
+    if (kIsWeb) {
+      return buttonGeneral;
+    }
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: Platform.isIOS
+          ? CupertinoButton(
+              onPressed: isWriting.value
+                  ? () => _handleSubmitLogic(
+                        messageController: messageController,
+                        focusNode: focusNode,
+                        isWriting: isWriting,
+                      )
+                  : null,
+              child: const Text('Enviar'),
+            )
+          : buttonGeneral,
     );
   }
 
@@ -224,7 +239,7 @@ class _ChatPageHomeState extends ConsumerState<ChatPageHome>
     if (userTo == null) return;
     if (user == null) return;
 
-    final MessageComponentChat messageCreate = MessageComponentChat(
+    final MessageComponentChatHome messageCreate = MessageComponentChatHome(
       uid: user.uid,
       animationController: AnimationController(
           duration: const Duration(milliseconds: 200), vsync: this),

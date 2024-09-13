@@ -2,10 +2,10 @@ import 'package:chat/core/core.dart';
 import 'package:flutter/material.dart';
 
 // This is a custom component to show a user, uses the widget listile as a base.
-class UserComponentUsers extends StatelessWidget {
+class UserComponentHome extends StatelessWidget {
   final UserEntityRule user;
   final void Function()? onTap;
-  const UserComponentUsers({super.key, required this.user, this.onTap});
+  const UserComponentHome({super.key, required this.user, this.onTap});
 
   @override
   Widget build(BuildContext context) {

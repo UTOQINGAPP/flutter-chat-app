@@ -22,11 +22,13 @@ class LoadingPageShared extends ConsumerWidget {
   }
 
   Future checkLoginState(WidgetRef ref, BuildContext context) async {
+    if (!context.mounted) return;
     // Verifying the possible routes where the user is, whether he is authenticated or not
     final bool loginRoute = state.fullPath == LoginViewAuthentication.link;
     final bool registerRoute =
         state.fullPath == RegisterViewAuthentication.link;
     final bool loadingRoute = state.fullPath == LoadingPageShared.link;
+
     // Performing the query to the server through consumer logic
     final authenticationConsumerLogic =
         ref.read(authenticationConsumerLogicSharedProvider);
@@ -35,7 +37,7 @@ class LoadingPageShared extends ConsumerWidget {
 
     // Checking if the user is authenticated and a user arrives as a response from the server
     if (isLoggingIn.$1 && isLoggingIn.$2 != null) {
-      ref.read(userLogicSharedProvider.notifier).update(isLoggingIn.$2!);
+      await ref.read(userLogicSharedProvider.notifier).update(isLoggingIn.$2!);
       await ref.read(socketConsumerLogicSharedProvider.notifier).connect();
     }
 

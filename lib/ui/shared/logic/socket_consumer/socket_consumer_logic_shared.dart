@@ -12,7 +12,7 @@ class SocketConsumerLogicShared extends _$SocketConsumerLogicShared {
   late final SocketConsumerUse _consumer;
   @override
   ServerStatus build() {
-    final source = SocketSourceUse(EnvConfig.socketUrl);
+    final source = SocketSourceUse(EnvConfig.socketUrl());
     _consumer = SocketConsumerUse(source);
     return ServerStatus.connecting;
   }

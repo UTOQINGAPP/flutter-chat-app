@@ -1,6 +1,6 @@
 import 'package:chat/configs/configs.dart';
+import 'package:chat/ui/layouts/home/components/components_home.dart';
 import 'package:chat/ui/layouts/home/pages/pages_home.dart';
-import 'package:chat/ui/layouts/home/views/users/components/components_users.dart';
 import 'package:chat/ui/shared/shared_ui.dart';
 
 class UsersViewHome extends StatefulHookConsumerWidget {
@@ -28,7 +28,7 @@ class _UsersViewHomeState extends ConsumerState<UsersViewHome> {
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    return UserComponentUsers(
+                    return UserComponentHome(
                       user: users[index],
                       onTap: () {
                         ref

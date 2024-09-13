@@ -17,7 +17,7 @@ class UsersConsumerShared extends _$UsersConsumerShared {
     return _consumer.getUsuarios();
   }
 
-  refresh() async {
+  void refresh() async {
     state = AsyncValue.data(await _consumer.getUsuarios());
   }
 }

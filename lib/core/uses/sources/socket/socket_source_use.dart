@@ -11,11 +11,13 @@ class SocketSourceUse implements SocketSourceRule {
   @override
   Future<void> connect() async {
     final String? token = await TokenSecureStorageHelperConfig.getToken();
+
     _socket = io(url, {
       'transports': ['websocket'],
       'autoConnect': true,
       'forceNew': true,
-      'extraHeaders': {'x-token': token}
+      //'extraHeaders': {'x-token': token},
+      'query': {'token': token}
     });
 
     _socket.on('connect', (_) {

@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 
 // This is a personalized component that shows a message,
 // visually different depending on who sends it and who receives it.
-class MessageComponentChat extends StatelessWidget {
+class MessageComponentChatHome extends StatelessWidget {
   final MessageEntityRule data;
   final String uid;
   final AnimationController animationController;
-  const MessageComponentChat({
+  const MessageComponentChatHome({
     super.key,
     required this.uid,
     required this.data,

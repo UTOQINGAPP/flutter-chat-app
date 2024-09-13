@@ -61,7 +61,7 @@ class LoginViewAuthentication extends ConsumerWidget {
                     }
                   },
           ),
-          const SizedBox(height: 60),
+          const SizedBox(height: 30),
           LabelsComponentAuthentication(
             title: '¿No tienes cuenta?',
             subTitle: 'Crea un ahora!',

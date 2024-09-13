@@ -7,8 +7,11 @@ part 'dio_logic_shared.g.dart';
 Dio dioShared(DioSharedRef ref) {
   return Dio(
     BaseOptions(
-      baseUrl: EnvConfig.apiUrl,
-      headers: {'Content-Type': 'application/json'},
+      baseUrl: EnvConfig.apiUrl(),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       receiveDataWhenStatusError: true,
     ),
   );
