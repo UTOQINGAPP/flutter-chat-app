@@ -7,7 +7,7 @@ part of 'authentication_consumer_logic_shared.dart';
 // **************************************************************************
 
 String _$authenticationConsumerLogicSharedHash() =>
-    r'08bbf1646ed12434edc5e624603266f56d512a33';
+    r'43e959bd79bd265f478a66bac449d5205c461a7d';
 
 /// See also [authenticationConsumerLogicShared].
 @ProviderFor(authenticationConsumerLogicShared)

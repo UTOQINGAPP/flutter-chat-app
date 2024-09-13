@@ -1,3 +1,4 @@
+// Singleton that manages access to application assets.
 class AssetsConfig {
   static final AssetsConfig _instance = AssetsConfig._internal();
   AssetsConfig._internal();
@@ -10,12 +11,3 @@ class AssetsConfig {
 class ImagesAssetsConfig {
   String get logo => 'assets/images/tag-logo.png';
 }
-/* class FontsAssetsConfig {
-  String get merriweather => 'Merriweather';
-} */
-
-
-
-/* class VideosAssetsConfig {
-  String get test => 'assets/videos/video_test.mp4';
-} */

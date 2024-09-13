@@ -1,37 +1,36 @@
+import 'dart:io';
+
 import 'package:chat/configs/configs.dart';
+import 'package:chat/core/core.dart';
 import 'package:chat/ui/layouts/home/pages/chat/components/components_chat.dart';
-import 'package:chat/ui/layouts/home/pages/chat/models/models_chat.dart';
+import 'package:chat/ui/shared/shared_ui.dart';
 
-/* List<MessageModelChat> messagesModel = [
-  MessageModelChat(value: "Suena interesante.", uid: "user456"),
-  MessageModelChat(value: "Trabajando en un proyecto.", uid: "user123"),
-  MessageModelChat(value: "¿Qué has hecho hoy?", uid: "user456"),
-  MessageModelChat(value: "Todo bien, gracias.", uid: "user123"),
-  MessageModelChat(value: "Bien, ¿y tú?", uid: "user456"),
-  MessageModelChat(value: "Hola, ¿cómo estás?", uid: "user123"),
-]; */
-
-class ChatPageHome extends StatefulHookWidget {
+class ChatPageHome extends StatefulHookConsumerWidget {
   static String link = '/home/chat';
   const ChatPageHome({super.key});
 
   @override
-  State<ChatPageHome> createState() => _ChatPageHomeState();
+  ConsumerState<ChatPageHome> createState() => _ChatPageHomeState();
 }
 
-class _ChatPageHomeState extends State<ChatPageHome>
+class _ChatPageHomeState extends ConsumerState<ChatPageHome>
     with TickerProviderStateMixin {
-  List<MessageComponentChat> messages = [];
+  late List<MessageComponentChat> messages;
   @override
   Widget build(BuildContext context) {
     FocusNode focusNode = useFocusNode();
     TextEditingController messageController = useTextEditingController();
     ValueNotifier<bool> isWriting = useState(false);
+    UserEntityRule userTo = ref.watch(userToLogicSharedProvider);
 
     return Scaffold(
       appBar: AppBar(
-        leading:
-            IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_back)),
+        automaticallyImplyLeading: false,
+        leading: Platform.isIOS
+            ? null
+            : IconButton(
+                onPressed: () => context.pop(),
+                icon: const Icon(Icons.arrow_back)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 1,
@@ -40,15 +39,15 @@ class _ChatPageHomeState extends State<ChatPageHome>
             CircleAvatar(
               backgroundColor: Colors.blue[100],
               maxRadius: 14,
-              child: const Text(
-                'Te',
-                style: TextStyle(fontSize: 12),
+              child: Text(
+                userTo.name.substring(0, 2),
+                style: const TextStyle(fontSize: 12),
               ),
             ),
             const SizedBox(height: 3),
-            const Text(
-              'Teodoro Martinez',
-              style: TextStyle(color: Colors.black87, fontSize: 12),
+            Text(
+              userTo.name,
+              style: const TextStyle(color: Colors.black87, fontSize: 12),
             ),
           ],
         ),
@@ -67,6 +66,71 @@ class _ChatPageHomeState extends State<ChatPageHome>
     );
   }
 
+  @override
+  void initState() {
+    messages = [];
+    _loadHistory(ref.read(userToLogicSharedProvider).uid);
+    ref
+        .read(socketConsumerLogicSharedProvider.notifier)
+        .socket
+        .on('personal-message', (payload) => listenToMessage(payload));
+
+    super.initState();
+  }
+
+  Future _loadHistory(String userUid) async {
+    if (!mounted) {
+      return;
+    }
+
+    await ref
+        .read(chatConsumerLogicSharedProvider.notifier)
+        .getMessages(userUid);
+
+    final history = ref
+        .read(chatConsumerLogicSharedProvider)
+        .map((message) => MessageComponentChat(
+              animationController: AnimationController(
+                vsync: this,
+                duration: const Duration(milliseconds: 200),
+              )..forward(),
+              data: MessageEntityRule(
+                  fromUid: message.fromUid,
+                  toUid: message.toUid,
+                  message: message.message),
+              uid: ref.read(userLogicSharedProvider).uid,
+            ))
+        .toList();
+    setState(() {
+      messages.insertAll(0, history);
+    });
+  }
+
+  void listenToMessage(dynamic payload) async {
+    if (!mounted) {
+      return;
+    }
+
+    final user = ref.read(userLogicSharedProvider);
+    final uid = user.uid;
+
+    final MessageComponentChat messageCreate = MessageComponentChat(
+      uid: uid,
+      animationController: AnimationController(
+        duration: const Duration(milliseconds: 200),
+        vsync: this,
+      ),
+      data: MessageEntityRule(
+        fromUid: payload['from'],
+        toUid: payload['to'],
+        message: payload['message'],
+      ),
+    );
+    messages.insert(0, messageCreate);
+    setState(() {});
+    messageCreate.animationController.forward();
+  }
+
   SafeArea _inputMessageView({
     required TextEditingController messageController,
     required FocusNode focusNode,
@@ -74,9 +138,9 @@ class _ChatPageHomeState extends State<ChatPageHome>
   }) {
     return SafeArea(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
         height: 50,
         color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: [
             Flexible(
@@ -86,7 +150,6 @@ class _ChatPageHomeState extends State<ChatPageHome>
                   messageController: messageController,
                   focusNode: focusNode,
                   isWriting: isWriting,
-                  uid: 'user123',
                 ),
                 onChanged: (value) {
                   if (value.trim().isNotEmpty) {
@@ -109,7 +172,6 @@ class _ChatPageHomeState extends State<ChatPageHome>
                                 messageController: messageController,
                                 focusNode: focusNode,
                                 isWriting: isWriting,
-                                uid: 'user123',
                               )
                           : null,
                       child: const Text('Enviar'),
@@ -126,7 +188,6 @@ class _ChatPageHomeState extends State<ChatPageHome>
                                     messageController: messageController,
                                     focusNode: focusNode,
                                     isWriting: isWriting,
-                                    uid: 'user123',
                                   )
                               : null,
                           icon: const Icon(Icons.send),
@@ -156,17 +217,31 @@ class _ChatPageHomeState extends State<ChatPageHome>
     required TextEditingController messageController,
     required FocusNode focusNode,
     required ValueNotifier<bool> isWriting,
-    required String uid,
   }) {
+    UserEntityRule? userTo = ref.read(userToLogicSharedProvider);
+    UserEntityRule? user = ref.read(userLogicSharedProvider);
     if (messageController.text.isEmpty) return;
+    if (userTo == null) return;
+    if (user == null) return;
+
     final MessageComponentChat messageCreate = MessageComponentChat(
-      message: MessageModelChat(value: messageController.text, uid: uid),
-      uid: uid,
+      uid: user.uid,
       animationController: AnimationController(
           duration: const Duration(milliseconds: 200), vsync: this),
+      data: MessageEntityRule(
+        fromUid: user.uid,
+        toUid: userTo.uid,
+        message: messageController.text,
+      ),
     );
     messages.insert(0, messageCreate);
     messageCreate.animationController.forward();
+    ref.read(socketConsumerLogicSharedProvider.notifier).socket.emit(
+        'personal-message', {
+      'from': user.uid,
+      'to': userTo.uid,
+      'message': messageController.text
+    });
     messageController.clear();
     focusNode.requestFocus();
     isWriting.value = false;
@@ -177,6 +252,7 @@ class _ChatPageHomeState extends State<ChatPageHome>
     for (var message in messages) {
       message.animationController.dispose();
     }
+    messages = [];
     super.dispose();
   }
 }

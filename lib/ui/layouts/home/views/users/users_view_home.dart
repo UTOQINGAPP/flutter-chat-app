@@ -1,4 +1,5 @@
 import 'package:chat/configs/configs.dart';
+import 'package:chat/ui/layouts/home/pages/pages_home.dart';
 import 'package:chat/ui/layouts/home/views/users/components/components_users.dart';
 import 'package:chat/ui/shared/shared_ui.dart';
 
@@ -11,42 +12,46 @@ class UsersViewHome extends StatefulHookConsumerWidget {
 }
 
 class _UsersViewHomeState extends ConsumerState<UsersViewHome> {
-  List<UserModelShared> usuarios = List.generate(5, (index) {
-    return UserModelShared(
-      online: index % 2 == 0,
-      email: 'usuario$index@example.com',
-      name: 'Usuario $index',
-      uid: 'UID$index',
-    );
-  });
   Future<void> _refresh() async {
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() {
-      usuarios += List.generate(5, (index) {
-        return UserModelShared(
-          online: index % 2 == 0,
-          email: 'usuario${usuarios.length + index}@example.com',
-          name: 'Usuario ${usuarios.length + index}',
-          uid: 'UID${usuarios.length + index}',
-        );
-      });
-    });
+    return ref.read(usersConsumerSharedProvider.notifier).refresh();
   }
 
   @override
   Widget build(BuildContext context) {
+    final users = ref.watch(usersConsumerSharedProvider);
     return RefreshIndicator(
       onRefresh: _refresh,
       child: CustomScrollView(
         slivers: [
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return UserComponentUsers(
-                  user: usuarios[index],
-                );
-              },
-              childCount: usuarios.length,
+          users.when(
+            data: (users) {
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return UserComponentUsers(
+                      user: users[index],
+                      onTap: () {
+                        ref
+                            .read(userToLogicSharedProvider.notifier)
+                            .update(users[index]);
+
+                        context.push(ChatPageHome.link);
+                      },
+                    );
+                  },
+                  childCount: users.length,
+                ),
+              );
+            },
+            error: (error, stack) => SliverFillRemaining(
+              child: Center(
+                child: Text('Error al cargar los usuarios: $error'),
+              ),
+            ),
+            loading: () => const SliverFillRemaining(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
             ),
           ),
         ],

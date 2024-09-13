@@ -1,11 +1,11 @@
 import 'package:chat/configs/configs.dart';
-import 'package:chat/core/core.dart';
 import 'package:chat/ui/shared/shared_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'form_logic_register.g.dart';
 
+// Personalized registration form.
 class FormLogicStateRegister {
   final bool isPosting;
   final bool isFormPosted;
@@ -60,6 +60,7 @@ class FormLogicStateRegister {
   }
 }
 
+//Logic that manages the status of the fomurge and verifies that the conditions are met and then proceed to register.
 @riverpod
 class FormLogicRegister extends _$FormLogicRegister {
   @override
@@ -112,12 +113,11 @@ class FormLogicRegister extends _$FormLogicRegister {
         state.email.value,
         state.password.value,
       );
-      ref
-          .read(userLogicSharedProvider.notifier)
-          .update(UserAdapterUse.toEntity(response.user));
+      ref.read(userLogicSharedProvider.notifier).update(response.$2);
       state = state.copyWith(isPosting: false, isFormPosted: false);
-      if (response.ok) {
-        return (response.ok, 'Registro exitoso');
+      if (response.$1) {
+        ref.read(socketConsumerLogicSharedProvider.notifier).connect();
+        return (response.$1, 'Registro exitoso');
       }
     } catch (e) {
       state = state.copyWith(isPosting: false, isFormPosted: false);

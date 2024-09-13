@@ -7,6 +7,7 @@ import 'package:chat/ui/shared/shared_ui.dart';
 
 class LoginViewAuthentication extends ConsumerWidget {
   static String link = '/authentication/login';
+  static String name = 'login';
   const LoginViewAuthentication({super.key});
 
   @override
@@ -58,7 +59,6 @@ class LoginViewAuthentication extends ConsumerWidget {
                             subTitle: result.$2);
                       }
                     }
-                    //formLogicStateLogin.toString();
                   },
           ),
           const SizedBox(height: 60),

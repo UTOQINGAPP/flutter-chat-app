@@ -1,12 +1,9 @@
 import 'package:chat/core/rules/entities/entities_rule.dart';
-import 'package:chat/core/uses/uses_core.dart';
 
 abstract class AuthenticationSourceRule {
-  late UserEntityRule? user;
-
-  Future<LoginModelAuthenticationUse> login(String email, String password);
-  Future<LoginModelAuthenticationUse> register(
+  Future<(bool, UserEntityRule)> login(String email, String password);
+  Future<(bool, UserEntityRule)> register(
       String fullName, String email, String password);
-  Future<LoginModelAuthenticationUse?> isLoggedIn();
+  Future<(bool, UserEntityRule?)> isLoggedIn();
   Future<bool> logout();
 }

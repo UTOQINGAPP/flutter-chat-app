@@ -26,6 +26,7 @@ final RouteBase _authRoutes = StatefulShellRoute.indexedStack(
     StatefulShellBranch(routes: [
       GoRoute(
         path: LoginViewAuthentication.link,
+        name: LoginViewAuthentication.name,
         builder: (context, state) => const LoginViewAuthentication(),
       ),
     ]),

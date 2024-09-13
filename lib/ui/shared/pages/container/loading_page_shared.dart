@@ -16,42 +16,45 @@ class LoadingPageShared extends ConsumerWidget {
             child: CupertinoActivityIndicator(),
           );
         },
-        future: checkLoginState(ref),
+        future: checkLoginState(ref, context),
       ),
     );
   }
 
-  Future checkLoginState(WidgetRef ref) async {
+  Future checkLoginState(WidgetRef ref, BuildContext context) async {
+    // Verifying the possible routes where the user is, whether he is authenticated or not
     final bool loginRoute = state.fullPath == LoginViewAuthentication.link;
     final bool registerRoute =
         state.fullPath == RegisterViewAuthentication.link;
     final bool loadingRoute = state.fullPath == LoadingPageShared.link;
-
+    // Performing the query to the server through consumer logic
     final authenticationConsumerLogic =
         ref.read(authenticationConsumerLogicSharedProvider);
+
     final isLoggingIn = await authenticationConsumerLogic.isLoggedIn();
 
-    if (isLoggingIn != null) {
-      if (isLoggingIn.ok && loginRoute && ref.context.mounted) {
-        ref.context.go(UsersViewHome.link);
-      } else if (isLoggingIn.ok && registerRoute && ref.context.mounted) {
-        ref.context.go(UsersViewHome.link);
-      } else if (!isLoggingIn.ok && !loginRoute && ref.context.mounted) {
-        ref.context.go(LoginViewAuthentication.link);
-      } else if (!isLoggingIn.ok && !registerRoute && ref.context.mounted) {
-        ref.context.go(LoginViewAuthentication.link);
-      } else if (isLoggingIn.ok && loadingRoute && ref.context.mounted) {
-        ref.context.go(UsersViewHome.link);
-      } else if (!isLoggingIn.ok && loadingRoute && ref.context.mounted) {
-        ref.context.go(LoginViewAuthentication.link);
-      } else {
-        if (ref.context.mounted && !isLoggingIn.ok) {
-          ref.context.go(LoginViewAuthentication.link);
-        }
-      }
+    // Checking if the user is authenticated and a user arrives as a response from the server
+    if (isLoggingIn.$1 && isLoggingIn.$2 != null) {
+      ref.read(userLogicSharedProvider.notifier).update(isLoggingIn.$2!);
+      await ref.read(socketConsumerLogicSharedProvider.notifier).connect();
+    }
+
+    // Verifying what condition the user meets to direct them to the corresponding interface.
+    if (isLoggingIn.$1 && loginRoute && context.mounted) {
+      context.go(UsersViewHome.link);
+    } else if (isLoggingIn.$1 && registerRoute && context.mounted) {
+      context.go(UsersViewHome.link);
+    } else if (!isLoggingIn.$1 && !loginRoute && context.mounted) {
+      context.go(LoginViewAuthentication.link);
+    } else if (!isLoggingIn.$1 && !registerRoute && context.mounted) {
+      context.go(LoginViewAuthentication.link);
+    } else if (isLoggingIn.$1 && loadingRoute && context.mounted) {
+      context.go(UsersViewHome.link);
+    } else if (!isLoggingIn.$1 && loadingRoute && context.mounted) {
+      context.go(LoginViewAuthentication.link);
     } else {
-      if (ref.context.mounted) {
-        ref.context.go(LoginViewAuthentication.link);
+      if (context.mounted && !isLoggingIn.$1) {
+        context.go(LoginViewAuthentication.link);
       }
     }
   }

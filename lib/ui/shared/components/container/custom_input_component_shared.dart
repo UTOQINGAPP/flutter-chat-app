@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// This is a personalized component to handle user text inputs.
 class CustomInputComponentShared extends StatelessWidget {
   final IconData icon;
   final String placeholder;

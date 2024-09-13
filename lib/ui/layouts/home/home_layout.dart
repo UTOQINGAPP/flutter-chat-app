@@ -13,7 +13,7 @@ class HomeLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(ref.watch(userLogicSharedProvider)?.name ?? 'Error'),
+        title: Text(ref.watch(userLogicSharedProvider).name),
         elevation: 1,
         backgroundColor: Colors.white,
         leading: IconButton(
@@ -21,6 +21,7 @@ class HomeLayout extends ConsumerWidget {
             bool result = await ref
                 .read(authenticationConsumerLogicSharedProvider)
                 .logout();
+            ref.read(socketConsumerLogicSharedProvider.notifier).disconnect();
             if (!result) {
               return;
             }
@@ -33,14 +34,16 @@ class HomeLayout extends ConsumerWidget {
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 10),
-            /* child: Icon(
-              Icons.check_circle,
-              color: Colors.blue[400],
-            ), */
-            child: const Icon(
-              Icons.offline_bolt,
-              color: Colors.red,
-            ),
+            child: ref.watch(socketConsumerLogicSharedProvider) ==
+                    ServerStatus.online
+                ? Icon(
+                    Icons.check_circle,
+                    color: Colors.blue[400],
+                  )
+                : const Icon(
+                    Icons.offline_bolt,
+                    color: Colors.red,
+                  ),
           ),
         ],
       ),

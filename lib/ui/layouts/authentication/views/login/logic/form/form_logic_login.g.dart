@@ -6,7 +6,7 @@ part of 'form_logic_login.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$formLogicLoginHash() => r'0de9244a304c4cdabcbc9f50b4a6609ca6b64714';
+String _$formLogicLoginHash() => r'ccf190ded953ce337b48676c3ae59a9da00fe5d2';
 
 /// See also [FormLogicLogin].
 @ProviderFor(FormLogicLogin)

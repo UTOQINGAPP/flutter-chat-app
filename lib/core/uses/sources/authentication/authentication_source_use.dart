@@ -4,15 +4,11 @@ import 'package:chat/core/uses/adapters/adapters_use.dart';
 import 'package:chat/core/uses/models/models_use.dart';
 
 class AuthenticationSourceUse implements AuthenticationSourceRule {
-  @override
-  late UserEntityRule? user;
-
   final Dio dio;
 
   AuthenticationSourceUse(this.dio);
   @override
-  Future<LoginModelAuthenticationUse> login(
-      String email, String password) async {
+  Future<(bool, UserEntityRule)> login(String email, String password) async {
     final data = {
       'email': email,
       'password': password,
@@ -27,8 +23,7 @@ class AuthenticationSourceUse implements AuthenticationSourceRule {
       if (response.statusCode == 200) {
         var result = LoginModelAuthenticationUse.fromJson(response.data);
         await TokenSecureStorageHelperConfig.saveToken(result.token);
-        user = UserAdapterUse.toEntity(result.user);
-        return result;
+        return (result.ok, UserAdapterUse.toEntity(result.user));
       } else {
         throw Exception('Server error: ${response.statusCode}');
       }
@@ -38,7 +33,7 @@ class AuthenticationSourceUse implements AuthenticationSourceRule {
   }
 
   @override
-  Future<LoginModelAuthenticationUse> register(
+  Future<(bool, UserEntityRule)> register(
       String fullName, String email, String password) async {
     final data = {
       'name': fullName,
@@ -54,9 +49,7 @@ class AuthenticationSourceUse implements AuthenticationSourceRule {
       if (response.statusCode == 200) {
         var result = LoginModelAuthenticationUse.fromJson(response.data);
         await TokenSecureStorageHelperConfig.saveToken(result.token);
-        user = UserAdapterUse.toEntity(result.user);
-        //msg = response.data['msg'] ?? '';
-        return result;
+        return (result.ok, UserAdapterUse.toEntity(result.user));
       } else {
         throw Exception('Server error: ${response.statusCode}');
       }
@@ -66,12 +59,14 @@ class AuthenticationSourceUse implements AuthenticationSourceRule {
   }
 
   @override
-  Future<LoginModelAuthenticationUse?> isLoggedIn() async {
+  Future<(bool, UserEntityRule?)> isLoggedIn() async {
     try {
       final token = await TokenSecureStorageHelperConfig.getToken();
+
       if (token == null) {
-        return null;
+        return (false, null);
       }
+
       final response = await dio.get(
         '/login/renew',
         options: Options(headers: {'x-token': token}),
@@ -79,16 +74,12 @@ class AuthenticationSourceUse implements AuthenticationSourceRule {
 
       if (response.statusCode == 200) {
         var result = LoginModelAuthenticationUse.fromJson(response.data);
-        user = UserAdapterUse.toEntity(result.user);
-
-        //msg = response.data['msg'] ?? '';
-
-        return result;
+        return (result.ok, UserAdapterUse.toEntity(result.user));
       } else {
-        throw Exception('Server error: ${response.statusCode}');
+        return (false, null);
       }
-    } on DioException catch (e) {
-      throw Exception(e.response?.data['msg'].toString());
+    } on DioException catch (_) {
+      return (false, null);
     }
   }
 
@@ -97,7 +88,6 @@ class AuthenticationSourceUse implements AuthenticationSourceRule {
     await TokenSecureStorageHelperConfig.deleteToken();
 
     if (await TokenSecureStorageHelperConfig.getToken() == null) {
-      user = null;
       return true;
     }
     return false;

@@ -1,9 +1,11 @@
-import 'package:chat/ui/shared/shared_ui.dart';
+import 'package:chat/core/core.dart';
 import 'package:flutter/material.dart';
 
+// This is a custom component to show a user, uses the widget listile as a base.
 class UserComponentUsers extends StatelessWidget {
-  final UserModelShared user;
-  const UserComponentUsers({super.key, required this.user});
+  final UserEntityRule user;
+  final void Function()? onTap;
+  const UserComponentUsers({super.key, required this.user, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,7 @@ class UserComponentUsers extends StatelessWidget {
           borderRadius: BorderRadius.circular(60),
         ),
       ),
+      onTap: onTap,
     );
   }
 }

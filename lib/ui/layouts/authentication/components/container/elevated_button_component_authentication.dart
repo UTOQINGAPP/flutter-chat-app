@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// This is a personalized component, using the Widget Elevatedbutton.
 class ElevatedButtonComponentAuthentication extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;

@@ -20,7 +20,7 @@ class UserEntityRule {
       name: name ?? this.name,
       email: email ?? this.email,
       online: online ?? this.online,
-      uid: uid, // Mantiene el mismo valor de uid
+      uid: uid,
     );
   }
 }

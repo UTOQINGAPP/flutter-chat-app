@@ -1,9 +1,9 @@
 import 'package:chat/configs/configs.dart';
-import 'package:chat/core/core.dart';
 import 'package:chat/ui/shared/shared_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'form_logic_login.g.dart';
 
+// Personalized login form.
 class FormLogicStateLogin {
   final bool isPosting;
   final bool isFormPosted;
@@ -44,6 +44,7 @@ class FormLogicStateLogin {
   }
 }
 
+// Logic that manages the status of the fomurge and verifies that the conditions are met and then proceed to carry out the login.
 @riverpod
 class FormLogicLogin extends _$FormLogicLogin {
   @override
@@ -77,13 +78,12 @@ class FormLogicLogin extends _$FormLogicLogin {
         state.email.value,
         state.password.value,
       );
-      ref
-          .read(userLogicSharedProvider.notifier)
-          .update(UserAdapterUse.toEntity(response.user));
+      ref.read(userLogicSharedProvider.notifier).update(response.$2);
       state = state.copyWith(isPosting: false, isFormPosted: false);
 
-      if (response.ok) {
-        return (response.ok, 'Login exitoso');
+      if (response.$1) {
+        ref.read(socketConsumerLogicSharedProvider.notifier).connect();
+        return (response.$1, 'Login exitoso');
       }
     } catch (e) {
       state = state.copyWith(isPosting: false, isFormPosted: false);

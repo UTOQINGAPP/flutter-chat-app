@@ -1,15 +1,18 @@
-import 'package:chat/ui/layouts/home/pages/chat/models/models_chat.dart';
+import 'package:chat/core/core.dart';
 import 'package:flutter/material.dart';
 
+// This is a personalized component that shows a message,
+// visually different depending on who sends it and who receives it.
 class MessageComponentChat extends StatelessWidget {
-  final MessageModelChat message;
+  final MessageEntityRule data;
   final String uid;
   final AnimationController animationController;
-  const MessageComponentChat(
-      {super.key,
-      required this.message,
-      required this.uid,
-      required this.animationController});
+  const MessageComponentChat({
+    super.key,
+    required this.uid,
+    required this.data,
+    required this.animationController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +22,19 @@ class MessageComponentChat extends StatelessWidget {
         sizeFactor:
             CurvedAnimation(parent: animationController, curve: Curves.easeOut),
         child: Container(
-          child: message.uid == uid ? _myMessageView() : _notMessageView(),
+          child: selectedMessageView(),
         ),
       ),
     );
+  }
+
+  Widget? selectedMessageView() {
+    if (data.fromUid == uid) {
+      return _myMessageView();
+    } else if (data.toUid == uid) {
+      return _notMessageView();
+    }
+    return const Text('Mensaje de origen desconocido (x).');
   }
 
   Widget _myMessageView() {
@@ -36,7 +48,7 @@ class MessageComponentChat extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
         ),
         child: Text(
-          message.value,
+          data.message,
           style: const TextStyle(color: Colors.white),
         ),
       ),
@@ -54,7 +66,7 @@ class MessageComponentChat extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
         ),
         child: Text(
-          message.value,
+          data.message,
           style: const TextStyle(color: Colors.black87),
         ),
       ),

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:chat/configs/configs.dart';
 
+// Alert shown mainly when an error occurs.
 void showAlertDialogShared(BuildContext context,
     {required String title, required String subTitle}) {
   if (Platform.isAndroid) {
