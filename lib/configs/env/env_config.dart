@@ -10,25 +10,25 @@ class EnvConfig {
 
   static String apiUrl() {
     if (kIsWeb) {
-      return 'http://localhost:3000/api';
+      return 'https://messenger-chat-server-334d60c09c2c.herokuapp.com/api';
     } else if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3000/api';
+      return 'https://messenger-chat-server-334d60c09c2c.herokuapp.com/api';
     } else if (Platform.isIOS) {
-      return 'http://localhost:3000/api';
+      return 'https://messenger-chat-server-334d60c09c2c.herokuapp.com/api';
     } else {
-      return 'http://localhost:3000/api';
+      return 'https://messenger-chat-server-334d60c09c2c.herokuapp.com/api';
     }
   }
 
   static String socketUrl() {
     if (kIsWeb) {
-      return 'http://localhost:3000';
+      return 'https://messenger-chat-server-334d60c09c2c.herokuapp.com';
     } else if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3000';
+      return 'https://messenger-chat-server-334d60c09c2c.herokuapp.com';
     } else if (Platform.isIOS) {
-      return 'http://localhost:3000';
+      return 'https://messenger-chat-server-334d60c09c2c.herokuapp.com';
     } else {
-      return 'http://localhost:3000';
+      return 'https://messenger-chat-server-334d60c09c2c.herokuapp.com';
     }
   }
 }
