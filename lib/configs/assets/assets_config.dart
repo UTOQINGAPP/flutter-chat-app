@@ -9,5 +9,5 @@ class AssetsConfig {
 }
 
 class ImagesAssetsConfig {
-  String get logo => 'assets/images/tag-logo.png';
+  String get logo => 'assets/images/chat-icon.png';
 }
