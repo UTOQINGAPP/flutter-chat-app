@@ -1,5 +1,5 @@
 name: chat
-description: "A new Flutter project."
+description: "Esta aplicación es un sistema de CRUD de usuarios y chat en tiempo real desarrollado con Flutter. Se conecta a un servidor backend que permite gestionar usuarios y salas de chat."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
