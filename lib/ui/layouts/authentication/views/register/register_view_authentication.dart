@@ -4,7 +4,6 @@ import 'package:chat/ui/layouts/authentication/views/login/login_view_authentica
 import 'package:chat/ui/layouts/authentication/views/register/logic/logic_register.dart';
 import 'package:chat/ui/layouts/home/home_layout.dart';
 import 'package:chat/ui/shared/shared_ui.dart';
-import 'package:flutter/foundation.dart';
 
 class RegisterViewAuthentication extends ConsumerWidget {
   static String link = '/authentication/register';
