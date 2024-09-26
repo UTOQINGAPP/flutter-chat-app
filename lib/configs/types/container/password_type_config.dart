@@ -6,7 +6,7 @@ enum PasswordError { empty, length, format }
 // Extend FormzInput and provide the input type and error type.
 class Password extends FormzInput<String, PasswordError> {
   static final RegExp passwordRegExp = RegExp(
-    r'(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$',
+    r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{9,}$',
   );
 
   // Call super.pure to represent an unmodified form input.
@@ -21,7 +21,7 @@ class Password extends FormzInput<String, PasswordError> {
     if (displayError == PasswordError.empty) return 'El campo es requerido';
     if (displayError == PasswordError.length) return 'Mínimo 9 caracteres';
     if (displayError == PasswordError.format) {
-      return 'Debe de tener Mayúscula, letras y un número';
+      return 'Debe de tener Mayúscula, Minusculas, números y caracteres especiales';
     }
 
     return null;
